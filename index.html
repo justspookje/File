@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FileVault — Hosted on GitHub Pages</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: #2a2a3a;
+      --accent: #7fff72;
+      --accent2: #72c4ff;
+      --accent3: #ff7272;
+      --text: #e8e8f0;
+      --muted: #666688;
+      --mono: 'Space Mono', monospace;
+      --display: 'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(127,255,114,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127,255,114,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 32px 0 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 18px;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(127,255,114,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(127,255,114,0); }
+    }
+
+    .logo-text {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 2s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 64px 0 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: end;
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero-sub {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-num {
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── CONFIG BANNER ── */
+    .config-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .config-banner-icon { color: var(--accent2); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+    .config-banner-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .config-banner-text strong { color: var(--accent2); }
+
+    .config-banner-text code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 360px;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus-within { border-color: var(--accent); }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      width: 100%;
+    }
+
+    .search-box input::placeholder { color: var(--muted); }
+
+    .search-icon { color: var(--muted); font-size: 13px; }
+
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+    }
+
+    .view-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+      border-right: 1px solid var(--border);
+    }
+
+    .view-btn:last-child { border-right: none; }
+
+    .view-btn.active { background: var(--accent); color: var(--bg); }
+
+    .view-btn:not(.active):hover { color: var(--text); background: var(--surface2); }
+
+    .sort-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 10px 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── FILE GRID / LIST ── */
+    #file-container {
+      min-height: 300px;
+    }
+
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .file-list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* Grid card */
+    .file-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .file-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s;
+    }
+
+    .file-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(127,255,114,0.1); }
+
+    .file-card:hover::before { transform: scaleX(1); }
+
+    .file-card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .file-card-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .file-card-meta {
+      font-size: 10px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-type-tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent2);
+    }
+
+    /* List row */
+    .file-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 28px 1fr auto auto auto;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .file-row:hover { border-color: var(--accent); background: var(--surface2); }
+
+    .file-row-icon { font-size: 16px; }
+
+    .file-row-name { font-size: 12px; font-weight: 700; color: var(--text); }
+
+    .file-row-type { font-size: 10px; color: var(--accent2); text-transform: uppercase; letter-spacing: 1px; }
+
+    .file-row-size { font-size: 10px; color: var(--muted); min-width: 60px; text-align: right; }
+
+    .file-row-dl {
+      color: var(--accent);
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .file-row:hover .file-row-dl { opacity: 1; }
+
+    /* ── LOADING / EMPTY / ERROR ── */
+    .state-box {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--muted);
+    }
+
+    .state-box-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
+
+    .state-box h3 { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+
+    .state-box p { font-size: 12px; line-height: 1.7; }
+
+    .state-box code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .loading-bar {
+      width: 120px;
+      height: 2px;
+      background: var(--border);
+      margin: 20px auto 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-bar::after {
+      content: '';
+      position: absolute;
+      left: -50%;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: var(--accent);
+      animation: load 1s ease-in-out infinite;
+    }
+
+    @keyframes load {
+      0% { left: -50%; }
+      100% { left: 100%; }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      margin-top: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer .f-left { font-size: 11px; color: var(--muted); }
+
+    footer .f-left a { color: var(--accent); text-decoration: none; }
+
+    footer .f-right {
+      font-size: 10px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    footer .f-right span { color: var(--accent); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 12px 20px;
+      z-index: 10000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: row; align-items: flex-start; }
+      .stat { text-align: left; }
+      .file-row { grid-template-columns: 28px 1fr auto; }
+      .file-row-type, .file-row-size { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-icon">⬡</div>
+      <span class="logo-text">File<span>Vault</span></span>
+    </a>
+    <div class="header-meta">
+      <div class="status-dot"></div>
+      <span id="repo-label">Initializing...</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <h1>Your files.<br><em>Always online.</em></h1>
+      <p class="hero-sub">
+        Drop files into the <code style="color:var(--accent);font-size:12px;">/files</code> folder of your repo, push to GitHub, and they appear here instantly — ready to share.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="stat-count">—</div>
+        <div class="stat-label">Files</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-size">—</div>
+        <div class="stat-label">Total size</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIG BANNER (shown only when on localhost/demo) -->
+  <div class="config-banner" id="config-banner" style="display:none;">
+    <div class="config-banner-icon">ℹ</div>
+    <div class="config-banner-text">
+      <strong>Setup:</strong> Edit the <code>CONFIG</code> block at the top of this file to point to your GitHub repo.
+      Set <code>owner</code> and <code>repo</code>, push files to <code>/files/</code> in your repo, and deploy this <code>index.html</code> via GitHub Pages.
+      Files are loaded via the public GitHub Contents API — no token needed for public repos.
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search files..." autocomplete="off" spellcheck="false" />
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select class="sort-select" id="sort-select">
+        <option value="name">Sort: Name</option>
+        <option value="size">Sort: Size</option>
+        <option value="type">Sort: Type</option>
+      </select>
+      <div class="view-toggle">
+        <button class="view-btn active" id="grid-btn" title="Grid view">⊞</button>
+        <button class="view-btn" id="list-btn" title="List view">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILE CONTAINER -->
+  <div id="file-container">
+    <div class="state-box" id="loading-state">
+      <div class="state-box-icon">◎</div>
+      <h3>Loading files...</h3>
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-left">
+      Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a> &mdash;
+      Files served from the <code style="color:var(--accent);font-size:10px;">/files</code> directory
+    </div>
+    <div class="f-right">
+      Powered by <span>FileVault</span>
+    </div>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG — edit these values to match your repository
+// ═══════════════════════════════════════════════════════
+const CONFIG = {
+  owner: '',          // GitHub username, e.g. 'torvalds'
+  repo:  '',          // Repo name,       e.g. 'my-files'
+  branch: 'main',     // Branch to read from
+  filesDir: 'files',  // Folder inside repo where your files live
+  siteTitle: 'FileVault',
+};
+// ═══════════════════════════════════════════════════════
+
+// Auto-detect from GitHub Pages URL if config is blank
+(function autoDetect() {
+  if (CONFIG.owner && CONFIG.repo) return;
+  const host = location.hostname; // e.g. username.github.io
+  const path = location.pathname; // e.g. /reponame/
+  if (host.endsWith('.github.io')) {
+    CONFIG.owner = CONFIG.owner || host.replace('.github.io', '');
+    const parts = path.split('/').filter(Boolean);
+    CONFIG.repo  = CONFIG.repo  || parts[0] || '';
+  }
+})();
+
+// ── Helpers ────────────────────────────────────────────
+const fmt = {
+  bytes(b) {
+    if (b === null || b === undefined) return '—';
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(2) + ' MB';
+  },
+  ext(name) {
+    const m = name.match(/\.([^.]+)$/);
+    return m ? m[1].toLowerCase() : '—';
+  },
+  icon(name) {
+    const ext = fmt.ext(name);
+    const map = {
+      // images
+      png:'🖼', jpg:'🖼', jpeg:'🖼', gif:'🖼', svg:'🖼', webp:'🖼', ico:'🖼',
+      // docs
+      pdf:'📄', doc:'📝', docx:'📝', txt:'📝', md:'📝', rtf:'📝',
+      // data
+      json:'🗂', csv:'🗂', xml:'🗂', yaml:'🗂', yml:'🗂', toml:'🗂',
+      // archives
+      zip:'📦', gz:'📦', tar:'📦', rar:'📦', '7z':'📦',
+      // code
+      js:'💻', ts:'💻', py:'💻', rb:'💻', go:'💻', rs:'💻', cpp:'💻', c:'💻', h:'💻', sh:'💻',
+      // audio/video
+      mp3:'🎵', wav:'🎵', ogg:'🎵', mp4:'🎬', webm:'🎬', avi:'🎬', mov:'🎬',
+      // fonts
+      ttf:'🔤', otf:'🔤', woff:'🔤', woff2:'🔤',
+    };
+    return map[ext] || '📁';
+  }
+};
+
+let allFiles = [];
+let view = 'grid';
+
+// ── Fetch from GitHub API ──────────────────────────────
+async function fetchFiles() {
+  if (!CONFIG.owner || !CONFIG.repo) {
+    showError('not-configured');
+    document.getElementById('config-banner').style.display = 'flex';
+    return;
+  }
+  document.getElementById('repo-label').textContent = `${CONFIG.owner}/${CONFIG.repo}`;
+  document.title = CONFIG.siteTitle + ' — ' + CONFIG.repo;
+
+  const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filesDir}?ref=${CONFIG.branch}`;
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/vnd.github.v3+json' }});
+    if (res.status === 404) { showError('not-found'); return; }
+    if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data)) { showError('not-dir'); return; }
+    allFiles = data.filter(f => f.type === 'file').map(f => ({
+      name: f.name,
+      size: f.size,
+      url:  f.download_url,
+      htmlUrl: f.html_url,
+      ext:  fmt.ext(f.name),
+    }));
+    updateStats();
+    render();
+  } catch(e) {
+    showError('fetch-error', e.message);
+  }
+}
+
+function updateStats() {
+  document.getElementById('stat-count').textContent = allFiles.length;
+  const total = allFiles.reduce((s, f) => s + (f.size || 0), 0);
+  document.getElementById('stat-size').textContent = fmt.bytes(total);
+}
+
+// ── Render ─────────────────────────────────────────────
+function render() {
+  const q     = document.getElementById('search').value.toLowerCase();
+  const sort  = document.getElementById('sort-select').value;
+  let files   = allFiles.filter(f => f.name.toLowerCase().includes(q));
+
+  if (sort === 'name') files.sort((a,b) => a.name.localeCompare(b.name));
+  if (sort === 'size') files.sort((a,b) => (b.size||0) - (a.size||0));
+  if (sort === 'type') files.sort((a,b) => a.ext.localeCompare(b.ext) || a.name.localeCompare(b.name));
+
+  const container = document.getElementById('file-container');
+
+  if (!files.length) {
+    container.innerHTML = `
+      <div class="state-box">
+        <div class="state-box-icon">⬡</div>
+        <h3>No files found</h3>
+        <p>${q ? `No matches for "<strong>${q}</strong>"` : `Add files to the <code>/${CONFIG.filesDir}</code> folder in your repo.`}</p>
+      </div>`;
+    return;
+  }
+
+  if (view === 'grid') {
+    container.innerHTML = `<div class="file-grid">${files.map(cardHTML).join('')}</div>`;
+  } else {
+    container.innerHTML = `<div class="file-list-view">${files.map(rowHTML).join('')}</div>`;
+  }
+
+  // Stagger animation
+  const items = container.querySelectorAll('.file-card, .file-row');
+  items.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(8px)';
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      el.style.opacity = '1';
+      el.style.transform = '';
+    }, i * 30);
+  });
+}
+
+function cardHTML(f) {
+  return `<a class="file-card" href="${f.url}" download title="Download ${f.name}">
+    <span class="file-card-icon">${fmt.icon(f.name)}</span>
+    <div class="file-card-name">${esc(f.name)}</div>
+    <div class="file-card-meta">
+      <span>${fmt.bytes(f.size)}</span>
+      <span class="file-type-tag">${f.ext}</span>
+    </div>
+  </a>`;
+}
+
+function rowHTML(f) {
+  return `<a class="file-row" href="${f.url}" download title="Download ${f.name}">
+    <span class="file-row-icon">${fmt.icon(f.name)}</span>
+    <span class="file-row-name">${esc(f.name)}</span>
+    <span class="file-row-type">${f.ext}</span>
+    <span class="file-row-size">${fmt.bytes(f.size)}</span>
+    <span class="file-row-dl">↓</span>
+  </a>`;
+}
+
+function esc(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// ── Error states ──────────────────────────────────────
+function showError(type, msg) {
+  const msgs = {
+    'not-configured': {
+      icon: '⚙',
+      title: 'Not configured',
+      body: `Edit the <code>CONFIG</code> block in <code>index.html</code> and set your GitHub <code>owner</code> and <code>repo</code>.`,
+    },
+    'not-found': {
+      icon: '⬡',
+      title: 'Directory not found',
+      body: `Make sure a <code>/${CONFIG.filesDir}/</code> folder exists in <code>${CONFIG.owner}/${CONFIG.repo}</code> (branch: <code>${CONFIG.branch}</code>).`,
+    },
+    'not-dir': {
+      icon: '✕',
+      title: 'Path is not a directory',
+      body: `The path <code>/${CONFIG.filesDir}</code> exists but is not a folder.`,
+    },
+    'fetch-error': {
+      icon: '⚠',
+      title: 'Could not load files',
+      body: `GitHub API request failed. ${msg || ''}`,
+    },
+  };
+  const e = msgs[type] || msgs['fetch-error'];
+  document.getElementById('file-container').innerHTML = `
+    <div class="state-box">
+      <div class="state-box-icon">${e.icon}</div>
+      <h3>${e.title}</h3>
+      <p>${e.body}</p>
+    </div>`;
+}
+
+// ── Toast ──────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Events ─────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sort-select').addEventListener('change', render);
+
+document.getElementById('grid-btn').addEventListener('click', () => {
+  view = 'grid';
+  document.getElementById('grid-btn').classList.add('active');
+  document.getElementById('list-btn').classList.remove('active');
+  render();
+});
+
+document.getElementById('list-btn').addEventListener('click', () => {
+  view = 'list';
+  document.getElementById('list-btn').classList.add('active');
+  document.getElementById('grid-btn').classList.remove('active');
+  render();
+});
+
+// ── Boot ───────────────────────────────────────────────
+fetchFiles();
+</script>
+</body>
+</html>
